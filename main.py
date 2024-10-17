@@ -1,84 +1,63 @@
+from cryptography.fernet import Fernet
 import random
 import string
-import re
 import os
 
-# Password generator with options for customization
-def generate_password(length=12, use_digits=True, use_punctuation=True):
-    characters = string.ascii_letters
-    if use_digits:
-        characters += string.digits
-    if use_punctuation:
-        characters += string.punctuation
-    
+# Generate or load the encryption key
+def load_key():
+    if not os.path.exists("secret.key"):
+        key = Fernet.generate_key()
+        with open("secret.key", "wb") as key_file:
+            key_file.write(key)
+    else:
+        with open("secret.key", "rb") as key_file:
+            key = key_file.read()
+    return key
+
+def encrypt_message(message, key):
+    f = Fernet(key)
+    encrypted_message = f.encrypt(message.encode())
+    return encrypted_message
+
+def decrypt_message(encrypted_message, key):
+    f = Fernet(key)
+    decrypted_message = f.decrypt(encrypted_message).decode()
+    return decrypted_message
+
+def generate_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(random.choice(characters) for _ in range(length))
     return password
 
-# Function to evaluate the strength of the password
-def evaluate_password_strength(password):
-    strength = 0
-    if len(password) >= 8:
-        strength += 1
-    if re.search(r'[A-Z]', password):
-        strength += 1
-    if re.search(r'[a-z]', password):
-        strength += 1
-    if re.search(r'[0-9]', password):
-        strength += 1
-    if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        strength += 1
-    
-    if strength <= 2:
-        return "Weak"
-    elif strength == 3:
-        return "Moderate"
+def save_password(encrypted_password):
+    with open("passwords.txt", "a") as file:
+        file.write(encrypted_password.decode() + "\n")
+
+def retrieve_passwords(key):
+    if os.path.exists("passwords.txt"):
+        with open("passwords.txt", "r") as file:
+            encrypted_passwords = file.readlines()
+            for encrypted_password in encrypted_passwords:
+                decrypted_password = decrypt_message(encrypted_password.strip().encode(), key)
+                print(f"Decrypted Password: {decrypted_password}")
     else:
-        return "Strong"
+        print("No passwords found.")
 
-# Function to save password with a label
-def save_password_with_label(label, password):
-    with open("saved_passwords.txt", "a") as file:
-        file.write(f"{label}: {password}\n")
-    print(f"Password saved successfully with label '{label}'.")
+def main():
+    key = load_key()
+    while True:
+        choice = input("Generate a new password (G) or Retrieve saved passwords (R) or Quit (Q)? ").upper()
+        if choice == "G":
+            password = generate_password()
+            print(f"Generated Password: {password}")
+            encrypted_password = encrypt_message(password, key)
+            save_password(encrypted_password)
+        elif choice == "R":
+            retrieve_passwords(key)
+        elif choice == "Q":
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-# Function to retrieve and display saved passwords with labels
-def retrieve_passwords():
-    if os.path.exists("saved_passwords.txt"):
-        with open("saved_passwords.txt", "r") as file:
-            saved_passwords = file.readlines()
-            if saved_passwords:
-                print("Saved passwords with labels:")
-                for idx, pwd in enumerate(saved_passwords, 1):
-                    print(f"{idx}: {pwd.strip()}")
-            else:
-                print("No passwords saved.")
-    else:
-        print("No saved passwords found.")
-
-# Main block
 if __name__ == "__main__":
-    try:
-        length = int(input("Enter password length: "))
-        use_digits = input("Include digits? (yes/no): ").lower() == 'yes'
-        use_punctuation = input("Include special characters? (yes/no): ").lower() == 'yes'
-
-        password = generate_password(length, use_digits, use_punctuation)
-        print("Your generated password is:", password)
-        
-        # Evaluate password strength
-        strength = evaluate_password_strength(password)
-        print(f"Password strength: {strength}")
-        
-        # Save password option with label
-        save_option = input("Do you want to save this password? (yes/no): ").lower()
-        if save_option == 'yes':
-            label = input("Enter a label for this password (e.g., 'Email account', 'Banking'): ")
-            save_password_with_label(label, password)
-        
-        # Retrieve saved passwords option
-        retrieve_option = input("Do you want to retrieve saved passwords? (yes/no): ").lower()
-        if retrieve_option == 'yes':
-            retrieve_passwords()
-
-    except ValueError:
-        print("Please enter a valid number for password length.")
+    main()
