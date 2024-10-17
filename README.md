@@ -26,6 +26,7 @@ PassForge is a powerful yet simple password manager designed for generating and 
 
 ```bash
 pip install cryptography
+```
 
 ### Clone the Repository
 
@@ -34,3 +35,32 @@ To clone the repository, run:
 ```bash
 git clone https://github.com/yourusername/PassForge.git
 cd PassForge
+```
+
+### Usage
+
+Run the Password Manager:
+
+```bash
+python main.py
+```
+### Example
+
+```bash
+Generate a new password (G), Retrieve saved passwords (R), or Quit (Q)? G
+Enter desired password length (default is 12): 16
+Generated Password: kW5$9!xzP@3sL&Qm
+Password saved successfully!
+```
+
+## Contributions
+
+Contributions are welcome! If you have suggestions or improvements, feel free to fork the repository and submit a pull request. All contributions should adhere to best practices and security standards.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+Let's make secure password management accessible and easy for everyone!
