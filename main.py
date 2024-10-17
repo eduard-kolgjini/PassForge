@@ -35,19 +35,19 @@ def evaluate_password_strength(password):
     else:
         return "Strong"
 
-# Function to save password to a file
-def save_password(password):
+# Function to save password with a label
+def save_password_with_label(label, password):
     with open("saved_passwords.txt", "a") as file:
-        file.write(password + "\n")
-    print("Password saved successfully.")
+        file.write(f"{label}: {password}\n")
+    print(f"Password saved successfully with label '{label}'.")
 
-# Function to retrieve and display saved passwords
+# Function to retrieve and display saved passwords with labels
 def retrieve_passwords():
     if os.path.exists("saved_passwords.txt"):
         with open("saved_passwords.txt", "r") as file:
             saved_passwords = file.readlines()
             if saved_passwords:
-                print("Saved passwords:")
+                print("Saved passwords with labels:")
                 for idx, pwd in enumerate(saved_passwords, 1):
                     print(f"{idx}: {pwd.strip()}")
             else:
@@ -69,10 +69,11 @@ if __name__ == "__main__":
         strength = evaluate_password_strength(password)
         print(f"Password strength: {strength}")
         
-        # Save password option
+        # Save password option with label
         save_option = input("Do you want to save this password? (yes/no): ").lower()
         if save_option == 'yes':
-            save_password(password)
+            label = input("Enter a label for this password (e.g., 'Email account', 'Banking'): ")
+            save_password_with_label(label, password)
         
         # Retrieve saved passwords option
         retrieve_option = input("Do you want to retrieve saved passwords? (yes/no): ").lower()
