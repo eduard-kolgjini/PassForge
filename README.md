@@ -1,7 +1,6 @@
 # PassForge
 
-PassForge is a powerful yet simple password manager designed for generating and managing secure passwords. It supports password encryption, retrieval, and seamless user interaction through a command-line interface (CLI). This project showcases practical skills in development, cybersecurity, and software testing, providing a secure and user-friendly password management solution.
-
+PassForge is a powerful yet simple password manager designed for generating and managing secure passwords. It supports password encryption, retrieval, and seamless user interaction through a command-line interface (CLI).
 ## Features
 
 - **Password Generation**: Generates secure passwords with customizable lengths.
